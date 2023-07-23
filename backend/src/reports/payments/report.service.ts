@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Not } from "typeorm";
-
+import { createCanvas, loadImage, registerFont } from "canvas";
 import { Booking } from "../../booking/entity/booking.entity";
 import { AuthService } from "../../auth/auth.service";
 import { JwtService } from "@nestjs/jwt";
@@ -115,5 +115,50 @@ months.month;
     }));
 
     return formattedResult;
+  }
+
+  async generateImageWithQuote(quote: string): Promise<Buffer> {
+    const canvas = createCanvas(800, 600);
+    const ctx = canvas.getContext("2d");
+
+    // Load the desired font
+    registerFont("/absolute/path/to/your/font.ttf", {
+      family: "YourFontFamily",
+    });
+    registerFont("src/fonts/your-font-file.ttf", { family: "YourFontFamily" });
+
+    // Set canvas dimensions
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+
+    // Set text properties
+    const fontSize = 30;
+    const fontFamily = "YourFontFamily";
+    const textColor = "#000000";
+
+    // Measure text size
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    const textMetrics = ctx.measureText(quote);
+    const textWidth = textMetrics.width;
+    const textHeight =
+      textMetrics.actualBoundingBoxAscent +
+      textMetrics.actualBoundingBoxDescent;
+
+    // Calculate text position for centering
+    const textX = (canvasWidth - textWidth) / 2;
+    const textY = (canvasHeight - textHeight) / 2;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw text
+    ctx.fillStyle = textColor;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    ctx.fillText(quote, textX, textY);
+
+    // Return the image buffer
+    return canvas.toBuffer();
   }
 }

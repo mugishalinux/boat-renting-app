@@ -1,10 +1,10 @@
-import { Controller, Get, Request, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Request, Res, UseGuards } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 import { AuthService } from "../../auth/auth.service";
-
+import { Response } from 'express';
 import { PaymentReportService } from "./report.service";
 
 @Controller("paymentReports")
@@ -64,5 +64,16 @@ export class ReportController {
       req.user.userId,
     );
     return count;
+  }
+
+  @Get("image")
+  async generateImage(
+    @Query('quote') quote: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const imageBuffer = await this.reportService.generateImageWithQuote(quote);
+
+    res.set('Content-Type', 'image/png');
+    res.send(imageBuffer);
   }
 }

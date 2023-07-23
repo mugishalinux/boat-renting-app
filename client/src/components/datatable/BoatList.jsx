@@ -543,9 +543,14 @@ const BoatList = () => {
             search === ""
               ? user
               : user.filter((item) =>
-                  [item.price, item.maxNumber, item.location.locationName].some(
-                    (value) => String(value).includes(search)
-                  )
+                  [
+                    item.bookingRef,
+                    item.names,
+                    item.bookingDate,
+                    item.phoneNumber,
+                    item.created_by,
+                    item.boatId,
+                  ].some((value) => String(value).includes(search))
                 )
           }
           columns={boatColumn.concat(actionColumns)}

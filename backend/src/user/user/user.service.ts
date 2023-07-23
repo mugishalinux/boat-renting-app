@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -18,6 +19,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ForgetPasswordDto } from "./dto/forget.password";
 import { SupportingDoc } from "./entity/other.doc.entity";
+import { ClientDto } from "./dto/client.dto";
 
 export type Usa = any;
 @Injectable()
@@ -59,6 +61,35 @@ export class UserService {
     }
   }
 
+  async createClient(userData: ClientDto) {
+    const user = new User();
+    const primaryPhone = await User.findOne({
+      where: { primaryPhone: userData.phoneNumber, status: Not(8) },
+    });
+    if (primaryPhone)
+      throw new BadRequestException(
+        `This phone number ${userData.phoneNumber} already taken`,
+      );
+    user.firstName = userData.firstName;
+    user.lastName = userData.lastName;
+    user.access_level = "client";
+    user.dob = userData.dob;
+    user.primaryPhone = userData.phoneNumber;
+    user.status = 1;
+    user.created_by = 1;
+    user.updated_by = 1;
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
+    user.password = hashedPassword;
+    try {
+      const data = await user.save();
+      return this.response.postResponse(data.id);
+    } catch (error) {
+      throw new InternalServerErrorException("something wrong : ", error);
+    }
+  }
+
   async getAllSkipper() {
     return User.find({
       where: { status: Not(8), access_level: Not("admin") },
@@ -72,9 +103,9 @@ export class UserService {
     });
   }
 
-  async getAllUsersByAccessLevel(role:string) {
+  async getAllUsersByAccessLevel(role: string) {
     return User.find({
-      where: { status: Not(8), access_level:role},
+      where: { status: Not(8), access_level: role },
       relations: ["supportingDoc"],
     });
   }
@@ -154,22 +185,26 @@ export class UserService {
       throw new BadRequestException(
         `User with Phone number: ${userData.phoneNumber} not found`,
       );
-    const yearOfBirth = user.dob.getFullYear();
-    if (yearOfBirth == userData.dob) {
-      const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(userData.password, 12);
-      user.password = hashedPassword;
-      try {
-        const data = await User.update(user.id, user);
-        return this.response.updateResponse(user.id);
-      } catch (error) {
-        throw new InternalServerErrorException("something wrong : ", error);
+    try {
+      const yearOfBirth = user.dob.getFullYear();
+      if (yearOfBirth == userData.dob) {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(userData.password, 12);
+        user.password = hashedPassword;
+        try {
+          const data = await User.update(user.id, user);
+          return this.response.updateResponse(user.id);
+        } catch (error) {
+          throw new InternalServerErrorException("something wrong : ", error);
+        }
+      } else {
+        return {
+          statusCode: 400,
+          message: "You provided incorrect year of birth",
+        };
       }
-    } else {
-      return {
-        statusCode: 400,
-        message: "You provided incorrect year of birth",
-      };
+    } catch (e) {
+      console.log(e);
     }
   }
 

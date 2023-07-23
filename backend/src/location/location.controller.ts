@@ -77,9 +77,9 @@ export class LocationController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Get("")
   getSingleAllLocation() {
+    console.log("hitted");
     return this.locationService.getAllLocations();
   }
 
@@ -101,5 +101,3 @@ export class LocationController {
     return this.locationService.deleteLocation(id, req.user.userId);
   }
 }
-
-

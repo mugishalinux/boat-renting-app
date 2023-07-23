@@ -14,6 +14,7 @@ import {
   HttpException,
   HttpStatus,
   ConsoleLogger,
+  ForbiddenException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { LoginDto } from "./dto/login.dto";
@@ -35,6 +36,7 @@ import { SubscriberDto } from "./dto/subscriber.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ForgetPasswordDto } from "./dto/forget.password";
+import { ClientDto } from "./dto/client.dto";
 
 @Controller("user")
 @ApiTags("user")
@@ -56,14 +58,14 @@ export class UserController {
   @ApiBearerAuth()
   async createAdmin(@Body() userDto: RegisterDto) {
     userDto.access_level = "admin";
-    return this.userService.createUsers(userDto);
+    console.log(userDto)
+    // return this.userService.createUsers(userDto);
   }
 
   @Post("createClient")
   @ApiBearerAuth()
-  async createClient(@Body() userDto: RegisterDto) {
-    userDto.access_level = "client";
-    return this.userService.createUsers(userDto);
+  async createClient(@Body() userDto: ClientDto) {
+    return this.userService.createClient(userDto);
   }
 
   @HasRoles("admin")
@@ -82,7 +84,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put("activateSkipperAccount/:id")
   @ApiBearerAuth()
-  async activateSkipperAccount(@Param("id") id: number) {
+  async activateSkipperAccount(@Request() req, @Param("id") id: number) {
+    const user = await User.findOne({
+      where: { id: req.user.userId },
+    });
+    if (user.access_level == "skipper") {
+      throw new ForbiddenException("You are not allowed activate account");
+    }
     return this.userService.approveSkipperAccount(id);
   }
   @ApiBearerAuth()
@@ -90,7 +98,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put("disableSkipperAccount/:id")
   @ApiBearerAuth()
-  async disableSkipperAccount(@Param("id") id: number) {
+  async disableSkipperAccount(@Request() req, @Param("id") id: number) {
+    const user = await User.findOne({
+      where: { id: req.user.userId },
+    });
+    if (user.access_level == "skipper") {
+      throw new ForbiddenException("You are not allowed activate account");
+    }
     return this.userService.disableSkipperAccount(id);
   }
 
@@ -199,6 +213,7 @@ export class UserController {
   @ApiBearerAuth()
   @Post("auth/login/user")
   async login(@Body() loginDto: LoginDto) {
+ 
     const user = await this.authService.validateUser(
       loginDto.phone,
       loginDto.password,

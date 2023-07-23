@@ -19,9 +19,9 @@ export class UpdateUserDto {
   @ApiProperty({ description: "please enter date of birth" })
   dob: Date;
   @IsNotEmpty()
-  @Matches(/(2507[8,2,3,9])[0-9]{7}/, {
+  @Matches(/(07[8,2,3,9])[0-9]{7}/, {
     message:
-      "Primary Phone Number must be Airtel or MTN number formatted like 2507*********",
+      "Primary Phone Number must be Airtel or MTN number formatted like 07*********",
   })
   @ApiProperty({
     description: "primary phone required",

@@ -2,7 +2,19 @@ import { IsEmail, IsIn, IsNotEmpty, Matches } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 // import { Roles } from "../../models/roles";
 
-export class ForgetPasswordDto {
+export class ClientDto {
+  @IsNotEmpty()
+  @ApiProperty({ description: "please enter first name" })
+  firstName: string;
+
+  @IsNotEmpty()
+  @ApiProperty({ description: "please enter last name" })
+  lastName: string;
+
+  @IsNotEmpty()
+  @ApiProperty({ description: "please enter date of birth" })
+  dob: any;
+
   @IsNotEmpty()
   @Matches(/(07[8,2,3,9])[0-9]{7}/, {
     message:
@@ -14,10 +26,6 @@ export class ForgetPasswordDto {
   phoneNumber: string;
 
   @IsNotEmpty()
-  @ApiProperty({ description: "please enter Year of Birth" })
-  dob: number;
-
-  @IsNotEmpty()
-  @ApiProperty({ description: "please enter new password" })
+  @ApiProperty()
   password: string;
 }
