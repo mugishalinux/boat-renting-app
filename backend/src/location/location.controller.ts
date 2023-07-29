@@ -79,7 +79,6 @@ export class LocationController {
   @ApiBearerAuth()
   @Get("")
   getSingleAllLocation() {
-    console.log("hitted");
     return this.locationService.getAllLocations();
   }
 

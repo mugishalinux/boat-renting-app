@@ -24,9 +24,9 @@ export class Booking extends BaseEntity {
   @Column()
   bookingDate: Date;
   @Column()
-  bookingFrom: number;
+  bookingFrom: string;
   @Column()
-  bookingTo: number;
+  bookingTo: string;
   @Column()
   status: number;
   @Column()

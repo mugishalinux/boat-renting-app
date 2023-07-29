@@ -13,6 +13,7 @@ import { Booking } from "./entity/booking.entity";
 import { Boat } from "../boats/entity/boat.entity";
 import { User } from "../user/user/entity/user.entity";
 import { userInfo } from "os";
+import { BookingReportDto } from "./dto/booking.report.dto";
 export type Usa = any;
 @Injectable()
 export class BookingService {
@@ -32,23 +33,6 @@ export class BookingService {
     });
     if (!user)
       throw new BadRequestException(`This user ${data.user} not found`);
-
-    console.log(data);
-
-    try {
-      const bookings = await Booking.query(`SELECT
-        *
-      FROM
-        booking
-      WHERE
-        booking. "boatId" = ${data.boat}
-        AND booking. "bookingDate" = ${data.bookingDate}
-        AND(booking. "bookingFrom" BETWEEN ${data.bookingFrom} AND ${data.bookingTo})`);
-
-      console.log(JSON.parse(bookings));
-    } catch (err) {
-      console.log(err);
-    }
 
     booking.user = user;
     booking.boat = boat;
@@ -74,9 +58,12 @@ export class BookingService {
     booking.bookingRef = parseInt(ref, 10);
 
     try {
-      // const data = await booking.save();
-      // return this.response.postResponse(data.id);
+      const data = await booking.save();
+      return {
+        bookingId: data.id,
+      };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException("something wrong : ", error);
     }
   }
@@ -90,6 +77,40 @@ export class BookingService {
     });
     if (!booking) throw new BadRequestException(`This booking ${id} not found`);
     return booking;
+  }
+
+  async getUserBooking(id: number) {
+    const user = await User.findOne({
+      where: { status: Not(8), id: id },
+    });
+    if (!user) throw new BadRequestException(`This User ${id} not found`);
+
+    const booking = await Booking.find({
+      relations: {
+        payment: true,
+      },
+      where: { status: Not(8), user: { id } },
+    });
+
+    const bookingReportList: BookingReportDto[] = [];
+
+    for (let i = 0; i < booking.length; i++) {
+      const data = new BookingReportDto();
+      data.id = booking[i].id;
+      data.bookingRef = booking[i].bookingRef;
+      data.bookingDate = booking[i].bookingDate;
+      data.bookingFrom = booking[i].bookingFrom;
+      data.bookingTo = booking[i].bookingTo;
+      data.names = booking[i].names;
+      data.phoneNumber = booking[i].phoneNumber;
+      if (booking[i].payment != null || booking[i].payment != undefined) {
+        data.paymentStatus = booking[i].payment.paymentStatus;
+      } else {
+        data.paymentStatus = null;
+      }
+      bookingReportList.push(data);
+    }
+    return bookingReportList;
   }
   async deleteBooking(id: number) {
     const booking = await Booking.findOne({
@@ -117,7 +138,8 @@ export class BookingService {
       const booking = new Booking();
       booking.bookingRef = Math.floor(Math.random() * 1000000) + 1; // Generate random bookingRef
       booking.bookingDate = this.generateRandomDate(); // Generate random bookingDate
-      booking.bookingFrom = Math.floor(Math.random() * 11) + 7; // Generate random bookingFrom (between 7 and 17)
+      const bookingFromValue = Math.floor(Math.random() * 11) + 7;
+      booking.bookingFrom = bookingFromValue.toString(); // Generate random bookingFrom (between 7 and 17)
       booking.bookingTo =
         Math.floor(Math.random() * 11) + booking.bookingFrom + 1; // Generate random bookingTo (greater than bookingFrom)
       booking.status = 1;

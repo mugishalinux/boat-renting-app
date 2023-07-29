@@ -58,8 +58,7 @@ export class UserController {
   @ApiBearerAuth()
   async createAdmin(@Body() userDto: RegisterDto) {
     userDto.access_level = "admin";
-    console.log(userDto)
-    // return this.userService.createUsers(userDto);
+    return this.userService.createUsers(userDto);
   }
 
   @Post("createClient")

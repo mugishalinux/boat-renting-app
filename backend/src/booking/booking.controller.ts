@@ -27,6 +27,7 @@ import { RolesGuard } from "../auth/roles.guard";
 import { BookingService } from "./booking.service";
 import { BookingDto } from "./dto/booking.dto";
 import { Booking } from "./entity/booking.entity";
+import { UserDto } from "src/user/user/dto/userDto";
 
 @Controller("booking")
 @ApiTags("booking")
@@ -40,9 +41,17 @@ export class BookingController {
   @Post("creation")
   @ApiBearerAuth()
   async createBooking(@Body() data: BookingDto, @Request() req) {
+    const info = data.boat.toString();
+    const splits = info.split(",");
+    data.boat = parseInt(splits[0]);
+    data.user = parseInt(splits[1]);
     return this.bookingService.createBooking(data);
   }
-
+  @Get("userbookings/:id")
+  @ApiBearerAuth()
+  async getUserBookings(@Param("id") id: number) {
+    return this.bookingService.getUserBooking(id);
+  }
   @ApiQuery({ required: false, name: "pageNumber" })
   @ApiQuery({ required: false, name: "pageSize" })
   @ApiQuery({ required: false, name: "search" })

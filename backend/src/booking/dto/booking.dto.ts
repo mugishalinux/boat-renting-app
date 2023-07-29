@@ -16,12 +16,12 @@ export class BookingDto {
   @ApiProperty({
     description: "booking hour start is required",
   })
-  bookingFrom: any;
+  bookingFrom: string;
   @IsNotEmpty()
   @ApiProperty({
     description: "booking hour end is required",
   })
-  bookingTo: any;
+  bookingTo: string;
 
   @IsNotEmpty()
   @ApiProperty({
@@ -29,9 +29,9 @@ export class BookingDto {
   })
   names: string;
   @IsNotEmpty()
-  @Matches(/(2507[8,2,3,9])[0-9]{7}/, {
+  @Matches(/(07[8,2,3,9])[0-9]{7}/, {
     message:
-      "Primary Phone Number must be Airtel or MTN number formatted like 2507*********",
+      "Primary Phone Number must be Airtel or MTN number formatted like 07*********",
   })
   @ApiProperty({
     description: "please enter your names",

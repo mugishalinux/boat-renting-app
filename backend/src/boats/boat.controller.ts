@@ -45,6 +45,13 @@ export class BoatController {
   async createBoat(@Body() data: RegistrationBoatDto, @Request() req) {
     return this.boatService.createNewBoat(data);
   }
+
+  @Get("test/:id")
+  @ApiBearerAuth()
+  async createAdmin(@Param("id") id: number) {
+    return this.boatService.fetchAllBoat(id);
+  }
+
   @ApiQuery({ required: false, name: "pageNumber" })
   @ApiQuery({ required: false, name: "pageSize" })
   @ApiQuery({ required: false, name: "search" })

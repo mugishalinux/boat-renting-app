@@ -25,10 +25,6 @@ export class BoatService {
   ) {}
 
   async createNewBoat(data: RegistrationBoatDto) {
-    if (typeof data.price != "number" && typeof data.maxNumber != "number") {
-      throw new BadRequestException("please enter correct data");
-    }
-
     const user = await User.findOne({
       where: { status: Not(8), id: data.user },
     });
@@ -54,7 +50,8 @@ export class BoatService {
       await this.rankService.addRank(boat);
       return this.response.postResponse(datas.id);
     } catch (error) {
-      throw new InternalServerErrorException("something wrong : ", error);
+      console.log(error);
+      throw new BadRequestException("something wrong : ", error);
     }
   }
   async updateBoatInfo(id: number, data: RegistrationBoatDto, userId: number) {
@@ -117,6 +114,17 @@ export class BoatService {
         rank: true,
       },
       where: { status: Not(8), user: { id } },
+    });
+  }
+  async fetchAllBoat(id: number) {
+    const location = await Location.findOne({
+      where: { id },
+    });
+    if (!location)
+      throw new BadRequestException(`This location ${id} not found`);
+
+    return await Boat.find({
+      where: { status: Not(8), location: { id } },
     });
   }
 
