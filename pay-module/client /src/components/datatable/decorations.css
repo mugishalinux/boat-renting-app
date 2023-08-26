@@ -1,0 +1,29 @@
+.slick-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .slick-next {
+    right: -20px;
+    background-image: url("next-arrow.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(90deg);
+  }
+  
+  .slick-prev {
+    left: -20px;
+    background-image: url("prev-arrow.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(90deg);
+  }
+  

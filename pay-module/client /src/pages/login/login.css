@@ -1,0 +1,72 @@
+.login-section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("./money.jpg");
+  background-size: "cover";
+
+}
+.login-page {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  width: 400px;
+  height: 450px;
+  background-color: white;
+}
+.login-page .login-header {
+  width: 100%;
+}
+.login-page .login-header .login-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-page .login-header .login-item img {
+  width: 30%;
+  border-radius: 50px;
+  padding-top: 30px;
+}
+.login-page .login-header .login-item h5 {
+  color: #00778b;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+.form-group {
+  width: 80%;
+  margin: 0 auto;
+}
+.form-group .form-input {
+  margin-top: 10px;
+}
+.form-group .form-input input {
+  width: 100%;
+  margin: 0 auto;
+  border: solid #00778b 2px;
+  height: 45px;
+  border-radius: 5px;
+}
+.form-group .form-input- input {
+  width: 100%;
+  margin: 0 auto;
+  border: solid #00778b 2px;
+  height: 45px;
+  border-radius: 5px;
+}
+.form-group .form-input button {
+  width: 100%;
+  background-color: #00778b;
+  border: solid #00778b 2px;
+  color: white;
+  border-radius: 5px;
+  height: 40px;
+}
+.form-group .form-input-btn button {
+  width: 100%;
+  background-color: white;
+  border: solid #00778b 2px;
+  color: #00778b;
+  border-radius: 5px;
+  height: 40px;
+  margin-top: 10px;
+}

@@ -1,0 +1,14 @@
+body{
+    /* background-color: red; */
+}
+.listContainer{
+    position: "relative";
+    width: "100%";
+    height: "100vh";
+    background-image:url("./money.jpg") ;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    background-size: "cover";
+    background-position: 'center center';
+}
