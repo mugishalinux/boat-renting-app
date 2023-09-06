@@ -45,4 +45,6 @@ export class Boat extends BaseEntity {
   created_at: Date;
   @UpdateDateColumn()
   updated_at: Date;
+  @Column()
+  serialNumber: string;
 }

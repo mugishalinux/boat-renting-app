@@ -14,6 +14,7 @@ import { Boat } from "../boats/entity/boat.entity";
 import { User } from "../user/user/entity/user.entity";
 import { userInfo } from "os";
 import { BookingReportDto } from "./dto/booking.report.dto";
+import { isInt, isString } from "class-validator";
 export type Usa = any;
 @Injectable()
 export class BookingService {
@@ -33,12 +34,24 @@ export class BookingService {
     });
     if (!user)
       throw new BadRequestException(`This user ${data.user} not found`);
-
+    console.log("data: ", data);
+    const existingBooking = await this.getBookingByDate(data);
+    const existing2Booking = await this.getBooking2ByDate(data);
+    if (
+      parseInt(existingBooking[0].taken_spot) > 0 ||
+      parseInt(existing2Booking[0].taken_spot) > 0
+    ) {
+      throw new BadRequestException(`This Booking already been booked`);
+    }
+    // if(existingBooking){
+    // if(existingBooking.bookingTo===data.bookingTo)
+    //   throw new BadRequestException(`This Slot already booked`);
+    // }
     const amount = boat.price * data.diffHours;
 
     booking.user = user;
     booking.boat = boat;
-    booking.bookingDate = data.bookingDate;
+    booking.bookingDate = data.bookingDate.toString().substring(0, 10);
     booking.bookingFrom = data.bookingFrom;
     booking.bookingTo = data.bookingTo;
     booking.created_by = 1;
@@ -70,11 +83,41 @@ export class BookingService {
       throw new InternalServerErrorException("something wrong : ", error);
     }
   }
+  async getBookingByDate(booking: BookingDto) {
+    return await Booking.query(`SELECT
+    count(*) AS taken_spot
+  FROM
+    booking as b
+  WHERE
+    b. "boatId" = ${booking.boat}
+    AND b. "bookingDate"= '${booking.bookingDate.substring(0, 10)}'
+    AND (b. "bookingFrom" >= '${
+      booking.bookingFrom
+    }' AND b. "bookingFrom" <= '${booking.bookingFrom}' )
+    AND b. "bookingTo" >= '${booking.bookingTo}'
+    
+    `);
+  }
+
+  async getBooking2ByDate(booking: BookingDto) {
+    return await Booking.query(`SELECT
+    count(*) AS taken_spot
+  FROM
+    booking as b
+  WHERE
+    b. "boatId" = ${booking.boat}
+    AND b. "bookingDate"= '${booking.bookingDate.substring(0, 10)}'
+    AND b. "bookingFrom" <= '${booking.bookingFrom}'
+    AND b. "bookingTo" >= '${booking.bookingTo}'
+    
+    `);
+  }
   async getSingleBooking(id: number) {
     const booking = await Booking.findOne({
       relations: {
         boat: true,
         payment: true,
+        user: true,
       },
       where: { status: Not(8), id: id },
     });
@@ -91,20 +134,28 @@ export class BookingService {
     const booking = await Booking.find({
       relations: {
         payment: true,
+        boat: true,
       },
       where: { status: Not(8), user: { id } },
     });
 
+    const yoh = await this.getSingleBooking(booking[0].id);
+    console.log("hoh: ", yoh.user.firstName);
+
     const bookingReportList: BookingReportDto[] = [];
 
     for (let i = 0; i < booking.length; i++) {
+      console.log(booking);
       const data = new BookingReportDto();
+      const skipper = (await this.getSingleBooking(booking[0].id)).user;
       data.id = booking[i].id;
       data.bookingRef = booking[i].bookingRef;
-      data.bookingDate = booking[i].bookingDate;
+      data.bookingDate = booking[i].bookingDate.toString().substring(0, 10);
       data.bookingFrom = booking[i].bookingFrom;
       data.bookingTo = booking[i].bookingTo;
       data.names = booking[i].names;
+      data.skipperNames = `${skipper.firstName} ${skipper.lastName} `;
+      data.skipperNumber = skipper.primaryPhone;
       data.phoneNumber = booking[i].phoneNumber;
       if (booking[i].payment != null || booking[i].payment != undefined) {
         data.paymentStatus = booking[i].payment.paymentStatus;
@@ -115,6 +166,7 @@ export class BookingService {
     }
     return bookingReportList;
   }
+
   async deleteBooking(id: number) {
     const booking = await Booking.findOne({
       relations: {
@@ -140,7 +192,9 @@ export class BookingService {
     for (let i = 1; i <= 500; i++) {
       const booking = new Booking();
       booking.bookingRef = Math.floor(Math.random() * 1000000) + 1; // Generate random bookingRef
-      booking.bookingDate = this.generateRandomDate(); // Generate random bookingDate
+      booking.bookingDate = this.generateRandomDate()
+        .toString()
+        .substring(0, 10); // Generate random bookingDate
       const bookingFromValue = Math.floor(Math.random() * 11) + 7;
       booking.bookingFrom = bookingFromValue.toString(); // Generate random bookingFrom (between 7 and 17)
       booking.bookingTo =

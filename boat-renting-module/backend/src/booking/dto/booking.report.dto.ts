@@ -4,7 +4,7 @@ export class BookingReportDto {
 
   bookingRef: number;
 
-  bookingDate: Date;
+  bookingDate: string;
 
   bookingFrom: string;
 
@@ -19,4 +19,8 @@ export class BookingReportDto {
   created_at: Date;
 
   paymentStatus: string;
+
+  skipperNames: string;
+  
+  skipperNumber: string;
 }

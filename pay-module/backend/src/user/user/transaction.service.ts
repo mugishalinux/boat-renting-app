@@ -112,7 +112,7 @@ export class TransactionService {
           "You have successfully paid amount " +
           " " + " " +
           amount +
-          "for your booking",
+          " for your booking",
       });
       // Send email
       const info2 = await this.transporter.sendMail({
@@ -131,6 +131,8 @@ export class TransactionService {
           userClient.lastName +
           " for boat reservation  ",
       });
+      console.log("email of skipper " + userSkipper.email)
+      console.log("email of skipper " + userClient.email)
       console.log("Email sent:", info1.response);
       console.log("Email sent:", info2.response);
     } catch (error) {

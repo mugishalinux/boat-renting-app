@@ -9,7 +9,7 @@ export class BookingDto {
 
   @IsNotEmpty()
   @ApiProperty({ description: "date from required" })
-  bookingDate: Date;
+  bookingDate: string;
 
   @IsNotEmpty()
   @ApiProperty({ description: "booking from hour required" })

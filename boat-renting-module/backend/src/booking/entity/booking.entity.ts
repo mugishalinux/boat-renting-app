@@ -22,7 +22,7 @@ export class Booking extends BaseEntity {
   @Column()
   bookingRef: number;
   @Column()
-  bookingDate: Date;
+  bookingDate: string;
   @Column()
   bookingFrom: string;
   @Column()

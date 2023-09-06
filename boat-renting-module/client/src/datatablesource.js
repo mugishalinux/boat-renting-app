@@ -149,7 +149,7 @@ export const skippersColumn = [
   {
     field: "dob",
     headerName: "dob",
-    width: 100,
+    width: 150,
     renderCell: (params) => {
       const dob = new Date(params.row.dob);
       const formattedDate = dob.toLocaleDateString("en-US", {
@@ -166,11 +166,12 @@ export const skippersColumn = [
     width: 130,
     renderCell: (params) => {
       const phoneNumber = params.row.primaryPhone;
-      const reformattedPhone = phoneNumber.substring(2);
+      const reformattedPhone = phoneNumber.substring(0);
 
       return <div className="cellWithImg">{reformattedPhone}</div>;
     },
   },
+  
   // {
   //   field: "NID",
   //   headerName: "NID",
@@ -206,14 +207,14 @@ export const skippersColumn = [
   //   },
   // },
 
-  // {
-  //   field: "status",
-  //   headerName: "status",
-  //   width: 100,
-  //   renderCell: (params) => {
-  //     return <div className="cellWithImg">{params.row.status}</div>;
-  //   },
-  // },
+  {
+    field: "Role",
+    headerName: "Role",
+    width: 100,
+    renderCell: (params) => {
+      return <div className="cellWithImg">{params.row.access_level}</div>;
+    },
+  },
 ];
 
 export const boatColumn = [
@@ -249,6 +250,16 @@ export const boatColumn = [
     renderCell: (params) => {
       return (
         <div className="cellWithImg">{params.row.location.locationName}</div>
+      );
+    },
+  },
+  {
+    field: "Boat Serial Number",
+    headerName: "Boat Serial Number",
+    width: 110,
+    renderCell: (params) => {
+      return (
+        <div className="cellWithImg">{params.row.serialNumber}</div>
       );
     },
   },

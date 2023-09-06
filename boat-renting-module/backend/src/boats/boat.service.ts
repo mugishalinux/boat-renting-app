@@ -45,6 +45,11 @@ export class BoatService {
     boat.updated_by = user.id;
     boat.status = 1;
     boat.boatImages = data.boatImages;
+    const count = await Boat.count();
+
+    // Increment the count by 1 and format it with leading zeros
+    const serialNumber = String(count + 1).padStart(7, "0");
+    boat.serialNumber=serialNumber;
     try {
       const datas = await boat.save();
       await this.rankService.addRank(boat);

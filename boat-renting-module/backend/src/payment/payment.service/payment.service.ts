@@ -143,6 +143,10 @@ export class PaymentService {
         if (response.status == 201) {
           //send booking confirmation email
           try {
+            // const userInfo = await User.findOne({
+            //   where: { boat: { id: booking.boat.id } },
+            // });
+
             // Send email
             const info1 = await this.transporter.sendMail({
               from: process.env.SMTPUSERNANE,
